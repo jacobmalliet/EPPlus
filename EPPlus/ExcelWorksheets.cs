@@ -82,19 +82,24 @@ namespace OfficeOpenXml
                     if (attr != null)
                         hidden = TranslateHidden(attr.Value);
 
-                    var sheetRelation = pck.Workbook.Part.GetRelationship(relId);
-                    Uri uriWorksheet = UriHelper.ResolvePartUri(pck.Workbook.WorkbookUri, sheetRelation.TargetUri);
+                    // Skip any sheets without a reference id. All of the sheet data is lost in this scenario.
+                    if (!string.IsNullOrEmpty(relId))
+                    {
+                        var sheetRelation = pck.Workbook.Part.GetRelationship(relId);
+                        Uri uriWorksheet = UriHelper.ResolvePartUri(pck.Workbook.WorkbookUri, sheetRelation.TargetUri);
 
-                    //add the worksheet
-                    if (sheetRelation.RelationshipType.EndsWith("chartsheet"))
-                    {
-                        _worksheets.Add(positionID, new ExcelChartsheet(_namespaceManager, _pck, relId, uriWorksheet, name, sheetID, positionID, hidden));
+                        //add the worksheet
+                        if (sheetRelation.RelationshipType.EndsWith("chartsheet"))
+                        {
+                            _worksheets.Add(positionID, new ExcelChartsheet(_namespaceManager, _pck, relId, uriWorksheet, name, sheetID, positionID, hidden));
+                        }
+                        else
+                        {
+                            _worksheets.Add(positionID, new ExcelWorksheet(_namespaceManager, _pck, relId, uriWorksheet, name, sheetID, positionID, hidden));
+                        }
+
+                        positionID++;
                     }
-                    else
-                    {
-                        _worksheets.Add(positionID, new ExcelWorksheet(_namespaceManager, _pck, relId, uriWorksheet, name, sheetID, positionID, hidden));
-                    }
-                    positionID++;
                 }
 			}
 		}
