@@ -3430,9 +3430,12 @@ namespace OfficeOpenXml
                 int cellStart = colEnd, cellEnd = colEnd;
                 GetBlockPos(xml, "sheetData", ref cellStart, ref cellEnd);
 
-                sw.Write(xml.Substring(colEnd, cellStart - colEnd));
-                var rowBreaks = new List<int>();
-                UpdateRowCellData(sw);
+                // dialog sheets do not need the sheetData element written to the xml
+                if (this._worksheetXml.DocumentElement.Name != "dialogsheet")
+                {
+                    sw.Write(xml.Substring(colEnd, cellStart - colEnd));
+                    UpdateRowCellData(sw);
+                }
 
                 int mergeStart = cellEnd, mergeEnd = cellEnd;
 
