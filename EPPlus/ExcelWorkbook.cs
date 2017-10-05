@@ -226,16 +226,24 @@ namespace OfficeOpenXml
 						}
 						else
 						{
-                            //if (addressType == ExcelAddressBase.AddressType.ExternalAddress || addressType == ExcelAddressBase.AddressType.ExternalName)
-                            //{
-                            //    var r = new ExcelAddress(fullAddress);
-                            //    namedRange.NameFormula = '\'[' + r._wb
-                            //}
-                            //else
-                            //{
-                                namedRange.NameFormula = fullAddress;
-                            //}
-						}
+						    if (addressType == ExcelAddressBase.AddressType.ExternalAddress || addressType == ExcelAddressBase.AddressType.ExternalName)
+						    {
+						        var r = new ExcelAddress(fullAddress);
+						        var referenceId = this._externalReferences.IndexOf(r._wb) + 1;
+						        if (referenceId > 0)
+						        {
+						            namedRange.NameFormula = fullAddress.Replace(r._wb, referenceId.ToString());
+						        }
+						        else
+						        {
+						            namedRange.NameFormula = fullAddress;
+						        }
+						    }
+						    else
+						    {
+						        namedRange.NameFormula = fullAddress;
+						    }
+                        }
 					}
 					else
 					{
